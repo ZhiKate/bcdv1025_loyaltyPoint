@@ -1,0 +1,47 @@
+version: '3.7'
+
+networks:
+  test:
+    name: fabric_test
+
+x-common-variables: &common-environment
+  COUCHDB_USER: admin
+  COUCHDB_PASSWORD: adminpw
+
+services:
+  couchdb-peer0-org1:
+    container_name: couchdb-peer0-org1
+    image: couchdb:3.1.1
+    labels:
+      service: hyperledger-fabric
+    environment:
+      <<: *common-environment
+    ports:
+      - 5984:5984
+    networks:
+      - test
+
+  couchdb-peer1-org1:
+    container_name: couchdb-peer1-org1
+    image: couchdb:3.1.1
+    labels:
+      service: hyperledger-fabric
+    environment:
+      <<: *common-environment
+    ports:
+      - 6984:5984
+    networks:
+      - test
+
+  couchdb-peer0-org2:
+    container_name: couchdb-peer0-org2
+    image: couchdb:3.1.1
+    labels:
+      service: hyperledger-fabric
+    environment:
+      <<: *common-environment
+    ports:
+      - 7984:5984
+    networks:
+      - test
+

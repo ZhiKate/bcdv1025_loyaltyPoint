@@ -1,0 +1,23 @@
+{
+  "name": "atcc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "set -x && fabric-chaincode-node start",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fabric-contract-api": "^2.5.2",
+    "fabric-shim": "^2.5.2",
+    "json-stringify-deterministic": "^1.0.8",
+    "sort-keys-recursive": "^2.1.8"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  }
+}
