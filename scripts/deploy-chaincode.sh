@@ -146,46 +146,4 @@ chaincodeQuery 1 '{"function":"ReadAssetByKey","Args":["1","1","COMPLETE_REFUND"
 warnBoldln "10.(Get asset by customerId, orderId and status) chaincodeQuery 2"
 chaincodeQuery 2 '{"function":"ReadAssetByKey","Args":["1","1","COMPLETE_REFUND"]}' localhost:9051
 
-#
-## Create new asset
-#warnBoldln "9.(Create asset) chaincodeInvoke 1"
-#CHAINCODE_CRATE_ASSET_FUNCTION="CreatAsset"
-#CHAINCODE_ASSET='"{\"ID\":\"asset7\",\"Color\":\"Yellow\",\"Size\":10,\"Owner\":\"Anna\",\"AppraisedValue\":500}"'
-#FCN_CALL='{"Args":["'${CHAINCODE_CRATE_ASSET_FUNCTION}'",'${CHAINCODE_ASSET}']}'
-#chaincodeInvoke 1 2 false
-#
-## Check created new asset
-#warnBoldln "10.(Get created asset using ID -) chaincodeQuery 1"
-#chaincodeQuery 1 '{"function":"ReadAsset","Args":["asset7"]}' localhost:7051
-#chaincodeQuery 1 '{"function":"ReadAsset","Args":["asset7"]}' localhost:7054
-#warnBoldln "10.(Get created asset using ID) chaincodeQuery 2"
-#chaincodeQuery 2 '{"function":"ReadAsset","Args":["asset7"]}' localhost:9051
-#
-## Update existing asset
-#warnBoldln "11.(Update asset) chaincodeInvoke 1 2"
-#CHAINCODE_CRATE_ASSET_FUNCTION="UpdateAsset"
-#CHAINCODE_ASSET='"{\"ID\":\"asset7\",\"Color\":\"Yellow\",\"Size\":10,\"Owner\":\"UPDATED-OWNER\",\"AppraisedValue\":500}"'
-#FCN_CALL='{"Args":["'${CHAINCODE_CRATE_ASSET_FUNCTION}'",'${CHAINCODE_ASSET}']}'
-#chaincodeInvoke 1 2 false
-#
-## Check updated result
-#warnBoldln "12.(Get updated asset using ID) chaincodeQuery 1"
-#chaincodeQuery 1 '{"function":"ReadAsset","Args":["asset7"]}' localhost:7051
-#chaincodeQuery 1 '{"function":"ReadAsset","Args":["asset7"]}' localhost:7054
-#warnBoldln "12.(Get updated asset using ID) chaincodeQuery 2"
-#chaincodeQuery 2 '{"function":"ReadAsset","Args":["asset7"]}' localhost:9051
-#
-## Delete asset using key(ID)
-#warnBoldln "11.(Delete asset) chaincodeInvoke 1 2"
-#CHAINCODE_CRATE_ASSET_FUNCTION="DeleteAsset"
-#FCN_CALL='{"Args":["'${CHAINCODE_CRATE_ASSET_FUNCTION}'","asset1"]}'
-#chaincodeInvoke 1 2 false
-#
-## Check all result
-#warnBoldln "13. (GET all asset again) chaincodeQuery 1"
-#chaincodeQuery 1 '{"Args":["GetAllAssets"]}' localhost:7051
-#chaincodeQuery 1 '{"Args":["GetAllAssets"]}' localhost:7054
-#warnBoldln "13. (GET all asset again) chaincodeQuery 2"
-#chaincodeQuery 2 '{"Args":["GetAllAssets"]}' localhost:9051
-
 exit 0
