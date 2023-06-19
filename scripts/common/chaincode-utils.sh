@@ -2,7 +2,6 @@
 
 function changeGlobals() {
   if [ "$1" = "localhost:7054" ]; then
-    infoln "HERERERERERE"
     export CORE_PEER_TLS_ROOTCERT_FILE=${CORE_PEER_TLS_ROOTCERT_FILE_ORG1_PEER1}
   fi
 }

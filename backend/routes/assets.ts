@@ -1,8 +1,8 @@
 import {Express, Request, Response} from "express";
 import {Connection} from "../fabric/connection";
 import {EndorseError, GatewayError} from "@hyperledger/fabric-gateway";
-import {classToPlain, instanceToPlain, plainToClass, plainToInstance} from "class-transformer";
-import {AssetSchema} from "../schema/asset.schema";
+import {instanceToPlain, plainToInstance} from "class-transformer";
+import {OrderSchema} from "../schema/asset.schema";
 import {validate, ValidationError} from "class-validator";
 
 const utf8Decoder = new TextDecoder();
@@ -33,10 +33,10 @@ export class AssetRouter {
         /**
          * @swagger
          *
-         * /assets:
+         * /orders:
          *   get:
          *     tags:
-         *       - "Assets"
+         *       - "Order"
          *     summary: "Get all assets"
          *     description: Return all assets
          *     produces:
@@ -45,7 +45,7 @@ export class AssetRouter {
          *       200:
          *         description: Successfull retrieval
          */
-        app.route('/assets')
+        app.route('/orders')
             .get(async (req: Request, res: Response) => {
                 const resultBytes = Connection.contract.evaluateTransaction('GetAllAssets');
                 const resultJson = utf8Decoder.decode(await resultBytes);
@@ -55,11 +55,11 @@ export class AssetRouter {
         /**
          * @swagger
          *
-         * /asset/{id}:
+         * /order/customer/{id}:
          *   get:
          *     tags:
-         *       - "Assets"
-         *     summary: "Get an asset by id"
+         *       - "Order"
+         *     summary: "Get an asset by customerId"
          *     description: Return the asset
          *     parameters:
          *       - in: path
@@ -73,12 +73,12 @@ export class AssetRouter {
          *       200:
          *         description: Successful retrieval
          */
-        app.route('/asset/:id')
+        app.route('/order/customer/:id')
             .get(async (req: Request<{id: string}>, res: Response) => {
                 let status = 200;
                 let response;
                 try {
-                    const resultBytes = Connection.contract.evaluateTransaction('ReadAsset', req.params.id);
+                    const resultBytes = Connection.contract.evaluateTransaction('ReadAssetByCustomer', req.params.id);
                     const resultJson = utf8Decoder.decode(await resultBytes);
                     response = JSON.parse(resultJson);
                 } catch (error) {
@@ -90,140 +90,12 @@ export class AssetRouter {
         /**
          * @swagger
          *
-         * /asset:
-         *   post:
+         * /order/{id}:
+         *   get:
          *     tags:
-         *       - "Assets"
-         *     summary: "Create an asset"
-         *     description: Create the asset
-         *     parameters:
-         *       - in: body
-         *         name: body
-         *         description: Asset data
-         *         schema:
-         *           type: object
-         *           required:
-         *             - ID
-         *             - AppraisedValue
-         *             - Color
-         *             - Owner
-         *             - Size
-         *             - docType
-         *           properties:
-         *             ID:
-         *               type: string
-         *             AppraisedValue:
-         *               type: integer
-         *             Color:
-         *               type: string
-         *             Owner:
-         *               type: string
-         *             Size:
-         *               type: integer
-         *             docType:
-         *               type: string
-         *     produces:
-         *       - application/json
-         *     responses:
-         *       200:
-         *         description: Success
-         */
-        app.route('/asset')
-            .post(async (req: Request, res: Response) => {
-                let response;
-                let status = 200;
-                try {
-                    const assetInstance = plainToInstance(AssetSchema, req.body);
-                    const validateError: ValidationError[] = await validate(assetInstance);
-                    if (validateError.length > 0) {
-                        res.status(400).send(validateError[0].constraints);
-                        return;
-                    }
-                    const asset = JSON.stringify(instanceToPlain(assetInstance));
-
-                    await Connection.contract.submitTransaction('CreatAsset', asset);
-                    response = ({"message": "Create success" })
-                } catch (error) {
-                    status = 400;
-                    response = this.errorHandler(error);
-                }
-                res.status(status).send(response);
-            })
-        /**
-         * @swagger
-         *
-         * /asset/{id}:
-         *   put:
-         *     tags:
-         *       - "Assets"
-         *     summary: "Update an asset by id"
-         *     description: Update the asset
-         *     parameters:
-         *       - in: path
-         *         name: id
-         *         description: Asset id
-         *         schema:
-         *           type: string
-         *         required: true
-         *       - in: body
-         *         name: body
-         *         description: Asset data
-         *         schema:
-         *           type: object
-         *           required:
-         *             - AppraisedValue
-         *             - Color
-         *             - Owner
-         *             - Size
-         *             - docType
-         *           properties:
-         *             AppraisedValue:
-         *               type: integer
-         *             Color:
-         *               type: string
-         *             Owner:
-         *               type: string
-         *             Size:
-         *               type: integer
-         *             docType:
-         *               type: string
-         *     produces:
-         *       - application/json
-         *     responses:
-         *       200:
-         *         description: Success
-         */
-        app.route('/asset/:id')
-            .put(async (req: Request<{id: string}>, res: Response) => {
-                let response;
-                let status = 200;
-                try {
-                    const assetInstance = plainToInstance(AssetSchema, req.body);
-                    assetInstance.ID = req.params.id;
-                    const validateError: ValidationError[] = await validate(assetInstance);
-                    if (validateError.length > 0) {
-                        res.status(400).send(validateError[0].constraints);
-                        return;
-                    }
-                    const asset = JSON.stringify(instanceToPlain(assetInstance));
-                    await Connection.contract.submitTransaction('UpdateAsset', asset);
-                    status = 200;
-                    response = ({"message": "Update success" })
-                } catch (error) {
-                    status = 500;
-                    response = this.errorHandler(error);
-                }
-                res.status(status).send(response);
-            })
-        /**
-         * @swagger
-         *
-         * /asset/{id}:
-         *   delete:
-         *     tags:
-         *       - "Assets"
-         *     summary: "Delete an asset by id"
-         *     description: Delete the asset
+         *       - "Order"
+         *     summary: "Get an asset by orderId"
+         *     description: Return the asset
          *     parameters:
          *       - in: path
          *         name: id
@@ -236,15 +108,73 @@ export class AssetRouter {
          *       200:
          *         description: Successful retrieval
          */
-        app.route('/asset/:id')
-            .delete(async (req: Request<{id: string}>, res: Response) => {
+        app.route('/order/:id')
+            .get(async (req: Request<{id: string}>, res: Response) => {
+                let status = 200;
+                let response;
+                try {
+                    const resultBytes = Connection.contract.evaluateTransaction('ReadAssetByOrder', req.params.id);
+                    const resultJson = utf8Decoder.decode(await resultBytes);
+                    response = JSON.parse(resultJson);
+                } catch (error) {
+                    status = 500;
+                    response = this.errorHandler(error);
+                }
+                res.status(status).send(response);
+            })
+        /**
+         * @swagger
+         *
+         * /order:
+         *   post:
+         *     tags:
+         *       - "Order"
+         *     summary: "Create an order"
+         *     description: Create the order
+         *     parameters:
+         *       - in: body
+         *         name: body
+         *         description: Asset data
+         *         schema:
+         *           type: object
+         *           required:
+         *             - customerId
+         *             - orderId
+         *             - status
+         *             - price
+         *           properties:
+         *             customerId:
+         *               type: string
+         *             orderId:
+         *               type: string
+         *             status:
+         *               type: string
+         *             price:
+         *               type: integer
+         *     produces:
+         *       - application/json
+         *     responses:
+         *       200:
+         *         description: Success
+         */
+        app.route('/order')
+            .post(async (req: Request, res: Response) => {
                 let response;
                 let status = 200;
                 try {
-                    await Connection.contract.submitTransaction('DeleteAsset', req.params.id);
-                    response = ({"message": "Delete success"})
+                    let assetInstance = plainToInstance(OrderSchema, req.body);
+                    assetInstance.createdDate = Date.now();
+                    const validateError: ValidationError[] = await validate(assetInstance);
+                    if (validateError.length > 0) {
+                        res.status(400).send(validateError[0].constraints);
+                        return;
+                    }
+                    const asset = JSON.stringify(instanceToPlain(assetInstance));
+
+                    await Connection.contract.submitTransaction('CreatAsset', asset);
+                    response = ({"message": "Create success" })
                 } catch (error) {
-                    status = 500;
+                    status = 400;
                     response = this.errorHandler(error);
                 }
                 res.status(status).send(response);

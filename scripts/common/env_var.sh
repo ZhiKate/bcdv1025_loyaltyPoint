@@ -75,7 +75,6 @@ parsePeerConnectionParameters() {
 	    PEERS="$PEERS $PEER"
     fi
     PEER_CONN_PARMS=("${PEER_CONN_PARMS[@]}" --peerAddresses $CORE_PEER_ADDRESS)
-#    CA=PEER0_ORG$1_CA
     CA=CORE_PEER_TLS_ROOTCERT_FILE_ORG$1_PEER0
     TLSINFO=(--tlsRootCertFiles "${!CA}")
     PEER_CONN_PARMS=("${PEER_CONN_PARMS[@]}" "${TLSINFO[@]}")

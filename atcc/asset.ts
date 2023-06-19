@@ -5,22 +5,19 @@
 import {Object, Property} from "fabric-contract-api";
 
 @Object()
-export class Asset {
+export class Order {
     @Property()
-    public docType?: string;
+    public orderId: string;
 
     @Property()
-    public ID: string;
+    public customerId: string;
 
     @Property()
-    public Color: string;
+    public price: number;
 
     @Property()
-    public Size: number;
+    public status: string;
 
     @Property()
-    public Owner: string;
-
-    @Property()
-    public AppraisedValue: number;
+    public createdDate: number;
 }

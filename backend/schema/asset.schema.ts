@@ -1,26 +1,22 @@
 import {IsNumber, IsString} from "class-validator";
 import {Trim} from "class-sanitizer";
 
-export class AssetSchema {
+export class OrderSchema {
     @IsString({message: "ID should be string type."})
     @Trim()
-    public ID?: string;
+    public customerId?: string;
 
     @IsString()
     @Trim()
-    public Color?: string;
+    public orderId?: string;
+
+    @IsString()
+    @Trim()
+    public status?: string;
 
     @IsNumber()
-    public Size?: number;
-
-    @IsString()
-    @Trim()
-    public Owner?: string;
+    public price?: number;
 
     @IsNumber()
-    public AppraisedValue?: number;
-
-    @IsString()
-    @Trim()
-    public docType?: string;
+    public createdDate?: number;
 }
