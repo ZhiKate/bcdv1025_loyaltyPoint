@@ -4,7 +4,7 @@
 3. brew install jq
 
 ### Up fabric network
-7. ./scripts/network.sh
+7. ./scripts/network.sh up/down
 8. ./scripts/create-channel.sh
 9. ./scripts/deploy-chaincode.sh
 
