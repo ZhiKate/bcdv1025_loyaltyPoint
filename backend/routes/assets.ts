@@ -2,7 +2,7 @@ import {Express, Request, Response} from "express";
 import {Connection} from "../fabric/connection";
 import {EndorseError, GatewayError} from "@hyperledger/fabric-gateway";
 import {instanceToPlain, plainToInstance} from "class-transformer";
-import {OrderSchema} from "../schema/asset.schema";
+import {ContributePointSchema, CreatePointSchema, UpdatePointSchema} from "../schema/asset.schema";
 import {validate, ValidationError} from "class-validator";
 
 const utf8Decoder = new TextDecoder();
@@ -33,104 +33,35 @@ export class AssetRouter {
         /**
          * @swagger
          *
-         * /orders:
+         * /contribution:
          *   get:
          *     tags:
-         *       - "Order"
-         *     summary: "Get all assets"
-         *     description: Return all assets
+         *       - "Contribution"
+         *     summary: "Get total contribution"
+         *     description: Get total contribution
          *     produces:
          *       - application/json
          *     responses:
          *       200:
-         *         description: Successfull retrieval
+         *         description: Successful retrieval
          */
-        app.route('/orders')
+        app.route('/contribution')
             .get(async (req: Request, res: Response) => {
-                const resultBytes = Connection.contract.evaluateTransaction('GetAllAssets');
+                const resultBytes = Connection.contract.evaluateTransaction('GetAllContribution');
                 const resultJson = utf8Decoder.decode(await resultBytes);
                 const result = JSON.parse(resultJson);
                 res.send(result);
-            })
+        })
+
         /**
          * @swagger
          *
-         * /order/customer/{id}:
-         *   get:
-         *     tags:
-         *       - "Order"
-         *     summary: "Get an asset by customerId"
-         *     description: Return the asset
-         *     parameters:
-         *       - in: path
-         *         name: id
-         *         schema:
-         *           type: string
-         *         required: true
-         *     produces:
-         *       - application/json
-         *     responses:
-         *       200:
-         *         description: Successful retrieval
-         */
-        app.route('/order/customer/:id')
-            .get(async (req: Request<{id: string}>, res: Response) => {
-                let status = 200;
-                let response;
-                try {
-                    const resultBytes = Connection.contract.evaluateTransaction('ReadAssetByCustomer', req.params.id);
-                    const resultJson = utf8Decoder.decode(await resultBytes);
-                    response = JSON.parse(resultJson);
-                } catch (error) {
-                    status = 500;
-                    response = this.errorHandler(error);
-                }
-                res.status(status).send(response);
-            })
-        /**
-         * @swagger
-         *
-         * /order/{id}:
-         *   get:
-         *     tags:
-         *       - "Order"
-         *     summary: "Get an asset by orderId"
-         *     description: Return the asset
-         *     parameters:
-         *       - in: path
-         *         name: id
-         *         schema:
-         *           type: string
-         *         required: true
-         *     produces:
-         *       - application/json
-         *     responses:
-         *       200:
-         *         description: Successful retrieval
-         */
-        app.route('/order/:id')
-            .get(async (req: Request<{id: string}>, res: Response) => {
-                let status = 200;
-                let response;
-                try {
-                    const resultBytes = Connection.contract.evaluateTransaction('ReadAssetByOrder', req.params.id);
-                    const resultJson = utf8Decoder.decode(await resultBytes);
-                    response = JSON.parse(resultJson);
-                } catch (error) {
-                    status = 500;
-                    response = this.errorHandler(error);
-                }
-                res.status(status).send(response);
-            })
-        /**
-         * @swagger
-         *
-         * /order:
+         * /user/contribution:
          *   post:
          *     tags:
-         *       - "Order"
-         *     summary: "Create an order"
-         *     description: Create the order
+         *       - "Contribution"
+         *     summary: "Liquid user point"
+         *     description: Liquid user point
          *     parameters:
          *       - in: body
          *         name: body
@@ -139,17 +70,14 @@ export class AssetRouter {
          *           type: object
          *           required:
          *             - customerId
-         *             - orderId
-         *             - status
-         *             - price
+         *             - companyName
+         *             - contribution
          *           properties:
          *             customerId:
          *               type: string
-         *             orderId:
+         *             companyName:
          *               type: string
-         *             status:
-         *               type: string
-         *             price:
+         *             contribution:
          *               type: integer
          *     produces:
          *       - application/json
@@ -157,13 +85,12 @@ export class AssetRouter {
          *       200:
          *         description: Success
          */
-        app.route('/order')
+        app.route('/user/contribution')
             .post(async (req: Request, res: Response) => {
                 let response;
                 let status = 200;
                 try {
-                    let assetInstance = plainToInstance(OrderSchema, req.body);
-                    assetInstance.createdDate = Date.now();
+                    let assetInstance = plainToInstance(ContributePointSchema, req.body);
                     const validateError: ValidationError[] = await validate(assetInstance);
                     if (validateError.length > 0) {
                         res.status(400).send(validateError[0].constraints);
@@ -171,7 +98,225 @@ export class AssetRouter {
                     }
                     const asset = JSON.stringify(instanceToPlain(assetInstance));
 
-                    await Connection.contract.submitTransaction('CreatAsset', asset);
+                    await Connection.contract.submitTransaction('LiquidUserPoint', asset);
+                    response = ({"message": "Liquidity success" })
+                } catch (error) {
+                    status = 400;
+                    response = this.errorHandler(error);
+                }
+                res.status(status).send(response);
+            })
+
+        /**
+         * @swagger
+         *
+         * /user/borrow:
+         *   post:
+         *     tags:
+         *       - "Contribution"
+         *     summary: "Borrow user point"
+         *     description: Borrow user point
+         *     parameters:
+         *       - in: body
+         *         name: body
+         *         description: Asset data
+         *         schema:
+         *           type: object
+         *           required:
+         *             - customerId
+         *             - companyName
+         *             - point
+         *           properties:
+         *             customerId:
+         *               type: string
+         *             companyName:
+         *               type: string
+         *             point:
+         *               type: integer
+         *     produces:
+         *       - application/json
+         *     responses:
+         *       200:
+         *         description: Success
+         */
+        app.route('/user/borrow')
+            .post(async (req: Request, res: Response) => {
+                let response;
+                let status = 200;
+                try {
+                    let assetInstance = plainToInstance(UpdatePointSchema, req.body);
+                    const validateError: ValidationError[] = await validate(assetInstance);
+                    if (validateError.length > 0) {
+                        res.status(400).send(validateError[0].constraints);
+                        return;
+                    }
+                    const asset = JSON.stringify(instanceToPlain(assetInstance));
+
+                    await Connection.contract.submitTransaction('BorrowUserPoint', asset);
+                    response = ({"message": "Borrow success" })
+                } catch (error) {
+                    status = 400;
+                    response = this.errorHandler(error);
+                }
+                res.status(status).send(response);
+            })
+
+        /**
+         * @swagger
+         *
+         * /users/point:
+         *   get:
+         *     tags:
+         *       - "Point"
+         *     summary: "Get all users with their point information"
+         *     description: Get all users
+         *     produces:
+         *       - application/json
+         *     responses:
+         *       200:
+         *         description: Successful retrieval
+         */
+        app.route('/users/point')
+            .get(async (req: Request, res: Response) => {
+            const resultBytes = Connection.contract.evaluateTransaction('GetAllUserPoints');
+            const resultJson = utf8Decoder.decode(await resultBytes);
+            const result = JSON.parse(resultJson);
+            res.send(result);
+        })
+
+        /**
+         * @swagger
+         *
+         * /users/{id}/point:
+         *   get:
+         *     tags:
+         *       - "Point"
+         *     summary: "Get user's point information"
+         *     description: Get user point information
+         *     parameters:
+         *       - in: path
+         *         name: id
+         *         schema:
+         *           type: string
+         *         required: true
+         *     produces:
+         *       - application/json
+         *     responses:
+         *       200:
+         *         description: Successful retrieval
+         */
+        app.route('/users/:id/point')
+            .get(async (req: Request, res: Response) => {
+                const resultBytes = Connection.contract.evaluateTransaction('GetUserPoints', req.params.id);
+                const resultJson = utf8Decoder.decode(await resultBytes);
+                const result = JSON.parse(resultJson);
+                res.send(result);
+            })
+
+        /**
+         * @swagger
+         *
+         * /user/point:
+         *   put:
+         *     tags:
+         *       - "Point"
+         *     summary: "Update user point"
+         *     description: Update user point
+         *     parameters:
+         *       - in: body
+         *         name: body
+         *         description: Asset data
+         *         schema:
+         *           type: object
+         *           required:
+         *             - customerId
+         *             - companyName
+         *             - point
+         *           properties:
+         *             customerId:
+         *               type: string
+         *             companyName:
+         *               type: string
+         *             point:
+         *               type: integer
+         *     produces:
+         *       - application/json
+         *     responses:
+         *       200:
+         *         description: Success
+         */
+        app.route('/user/point')
+            .put(async (req: Request, res: Response) => {
+                let response;
+                let status = 200;
+                try {
+                    let assetInstance = plainToInstance(UpdatePointSchema, req.body);
+                    const validateError: ValidationError[] = await validate(assetInstance);
+                    if (validateError.length > 0) {
+                        res.status(400).send(validateError[0].constraints);
+                        return;
+                    }
+                    const asset = JSON.stringify(instanceToPlain(assetInstance));
+
+                    await Connection.contract.submitTransaction('UpdateUserPoint', asset);
+                    response = ({"message": "Update success" })
+                } catch (error) {
+                    status = 400;
+                    response = this.errorHandler(error);
+                }
+                res.status(status).send(response);
+            })
+
+        /**
+         * @swagger
+         *
+         * /user/point:
+         *   post:
+         *     tags:
+         *       - "Point"
+         *     summary: "Create user point"
+         *     description: Create user point
+         *     parameters:
+         *       - in: body
+         *         name: body
+         *         description: Asset data
+         *         schema:
+         *           type: object
+         *           required:
+         *             - customerId
+         *             - customerName
+         *             - companyName
+         *             - point
+         *           properties:
+         *             customerId:
+         *               type: string
+         *             customerName:
+         *               type: string
+         *             companyName:
+         *               type: string
+         *             point:
+         *               type: integer
+         *     produces:
+         *       - application/json
+         *     responses:
+         *       200:
+         *         description: Success
+         */
+        app.route('/user/point')
+            .post(async (req: Request, res: Response) => {
+                let response;
+                let status = 200;
+                try {
+                    let assetInstance = plainToInstance(CreatePointSchema, req.body);
+                    assetInstance.contribution = 0;
+                    const validateError: ValidationError[] = await validate(assetInstance);
+                    if (validateError.length > 0) {
+                        res.status(400).send(validateError[0].constraints);
+                        return;
+                    }
+                    const asset = JSON.stringify(instanceToPlain(assetInstance));
+
+                    await Connection.contract.submitTransaction('CreatUserPoint', asset);
                     response = ({"message": "Create success" })
                 } catch (error) {
                     status = 400;

@@ -122,28 +122,28 @@ CHAINCODE_INIT_FUNCTION="InitLedger"
 FCN_CALL='{"function":"'${CHAINCODE_INIT_FUNCTION}'","Args":[]}'
 chaincodeInvoke 1 2 true
 # Check the Initial chaincode data
-warnBoldln "8. chaincodeQuery 1"
-chaincodeQuery 1 '{"Args":["GetAllAssets"]}' localhost:7051
-chaincodeQuery 1 '{"Args":["GetAllAssets"]}' localhost:7054
-warnBoldln "8. chaincodeQuery 2"
-chaincodeQuery 2 '{"Args":["GetAllAssets"]}' localhost:9051
-
-warnBoldln "9.(Get asset by customerId) chaincodeQuery 1"
-chaincodeQuery 1 '{"function":"ReadAssetByCustomer","Args":["1"]}' localhost:7051
-chaincodeQuery 1 '{"function":"ReadAssetByCustomer","Args":["1"]}' localhost:7054
-warnBoldln "9.(Get asset by customerId) chaincodeQuery 2"
-chaincodeQuery 2 '{"function":"ReadAssetByCustomer","Args":["1"]}' localhost:9051
-
-warnBoldln "9.(Get asset by orderId) chaincodeQuery 1"
-chaincodeQuery 1 '{"function":"ReadAssetByOrder","Args":["1"]}' localhost:7051
-chaincodeQuery 1 '{"function":"ReadAssetByOrder","Args":["1"]}' localhost:7054
-warnBoldln "9.(Get asset by orderId) chaincodeQuery 2"
-chaincodeQuery 2 '{"function":"ReadAssetByOrder","Args":["1"]}' localhost:9051
-
-warnBoldln "10.(Get asset by key: customerId, orderId and status) chaincodeQuery 1"
-chaincodeQuery 1 '{"function":"ReadAssetByKey","Args":["1","1","COMPLETE_REFUND"]}' localhost:7051
-chaincodeQuery 1 '{"function":"ReadAssetByKey","Args":["1","1","COMPLETE_REFUND"]}' localhost:7054
-warnBoldln "10.(Get asset by customerId, orderId and status) chaincodeQuery 2"
-chaincodeQuery 2 '{"function":"ReadAssetByKey","Args":["1","1","COMPLETE_REFUND"]}' localhost:9051
+#warnBoldln "8. chaincodeQuery 1"
+#chaincodeQuery 1 '{"Args":["GetAllAssets"]}' localhost:7051
+#chaincodeQuery 1 '{"Args":["GetAllAssets"]}' localhost:7054
+#warnBoldln "8. chaincodeQuery 2"
+#chaincodeQuery 2 '{"Args":["GetAllAssets"]}' localhost:9051
+#
+#warnBoldln "9.(Get asset by customerId) chaincodeQuery 1"
+#chaincodeQuery 1 '{"function":"ReadAssetByCustomer","Args":["1"]}' localhost:7051
+#chaincodeQuery 1 '{"function":"ReadAssetByCustomer","Args":["1"]}' localhost:7054
+#warnBoldln "9.(Get asset by customerId) chaincodeQuery 2"
+#chaincodeQuery 2 '{"function":"ReadAssetByCustomer","Args":["1"]}' localhost:9051
+#
+#warnBoldln "9.(Get asset by orderId) chaincodeQuery 1"
+#chaincodeQuery 1 '{"function":"ReadAssetByOrder","Args":["1"]}' localhost:7051
+#chaincodeQuery 1 '{"function":"ReadAssetByOrder","Args":["1"]}' localhost:7054
+#warnBoldln "9.(Get asset by orderId) chaincodeQuery 2"
+#chaincodeQuery 2 '{"function":"ReadAssetByOrder","Args":["1"]}' localhost:9051
+#
+#warnBoldln "10.(Get asset by key: customerId, orderId and status) chaincodeQuery 1"
+#chaincodeQuery 1 '{"function":"ReadAssetByKey","Args":["1","1","COMPLETE_REFUND"]}' localhost:7051
+#chaincodeQuery 1 '{"function":"ReadAssetByKey","Args":["1","1","COMPLETE_REFUND"]}' localhost:7054
+#warnBoldln "10.(Get asset by customerId, orderId and status) chaincodeQuery 2"
+#chaincodeQuery 2 '{"function":"ReadAssetByKey","Args":["1","1","COMPLETE_REFUND"]}' localhost:9051
 
 exit 0

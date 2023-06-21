@@ -1,22 +1,44 @@
 import {IsNumber, IsString} from "class-validator";
 import {Trim} from "class-sanitizer";
 
-export class OrderSchema {
+export class UpdatePointSchema {
     @IsString({message: "ID should be string type."})
     @Trim()
     public customerId?: string;
 
-    @IsString()
     @Trim()
-    public orderId?: string;
-
-    @IsString()
-    @Trim()
-    public status?: string;
+    public companyName?: string;
 
     @IsNumber()
-    public price?: number;
+    public point?: number;
+}
+
+export class CreatePointSchema {
+    @IsString({message: "ID should be string type."})
+    @Trim()
+    public customerId?: string;
+
+    @Trim()
+    public customerName?: string;
+
+    @Trim()
+    public companyName?: string;
+
+    @Trim()
+    public contribution?: number;
 
     @IsNumber()
-    public createdDate?: number;
+    public point?: number;
+}
+
+export class ContributePointSchema {
+    @IsString({message: "ID should be string type."})
+    @Trim()
+    public customerId?: string;
+
+    @Trim()
+    public companyName?: string;
+
+    @Trim()
+    public contribution?: number;
 }
