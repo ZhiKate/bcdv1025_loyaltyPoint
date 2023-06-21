@@ -35,7 +35,7 @@ export class AssetTransferContract extends Contract {
             },
             {
                 customerId: "3",
-                customerName: "Mr. Oh",
+                customerName: "Kyle",
                 companyName: "TimHortons",
                 contribution: 10,
                 point: 50,
