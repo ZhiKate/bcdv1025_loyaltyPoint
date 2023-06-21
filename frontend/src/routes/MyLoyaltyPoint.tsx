@@ -12,7 +12,7 @@ type UserPoint = {
     point: number
 }
 
-const MyLovelyPoint: FC<IUser> = ({userId}) => {
+const MyLoyaltyPoint: FC<IUser> = ({userId}) => {
     const [userPoints, setUserPoints] = useState<UserPoint[]>([]);
     useEffect(() => {
         const getUserPoints = async () => {
@@ -40,4 +40,4 @@ const MyLovelyPoint: FC<IUser> = ({userId}) => {
     )
 }
 
-export default MyLovelyPoint;
+export default MyLoyaltyPoint;

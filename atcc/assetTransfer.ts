@@ -9,6 +9,7 @@ const utf8Decoder = new TextDecoder();
 export class AssetTransferContract extends Contract {
     USER_KEY = "USER_POOL"
     POOL_KEY = "POINT_POOL"
+    HISTORY_KEY = "HISTORY_POOL"
     @Transaction()
     public async InitLedger(ctx: Context): Promise<void> {
         const pointAssets: UserPoint[] = [
@@ -46,6 +47,11 @@ export class AssetTransferContract extends Contract {
             const key = ctx.stub.createCompositeKey(this.USER_KEY, [asset.customerId, asset.companyName]);
             await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(asset))));
         }
+
+        // for (const asset of pointAssets) {
+        //     const key = ctx.stub.createCompositeKey(this.HISTORY_KEY, [asset.customerId, "1687385575164"])
+        //     await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(pointAssets))));
+        // }
 
         const pointPool: PointPool = {total: 30}
         await ctx.stub.putState(this.POOL_KEY, Buffer.from(stringify(sortKeysRecursive(pointPool))));

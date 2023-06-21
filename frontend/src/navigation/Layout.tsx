@@ -1,6 +1,4 @@
 import {Link, Outlet} from "react-router-dom";
-import TradePoints from "../routes/TradePoints";
-import TransactionHistory from "../routes/TransactionHistory";
 
 const Layout = () => {
     return (
@@ -9,7 +7,7 @@ const Layout = () => {
                 <div className="container">
                     <ul className="navbar-nav">
                         <li className="nav-item">
-                            <Link className="nav-link" to="/MyLovelyPoint">MyLovelyPoint</Link>
+                            <Link className="nav-link" to="/MyLoyaltyPoint">My Loyalty Point</Link>
                         </li>
                         <li className="nav-item">
                             <Link className="nav-link" to="/ContributePoints">Contribute Loyalty Points</Link>

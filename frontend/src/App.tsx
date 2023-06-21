@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
 import { Route, Routes } from "react-router-dom";
-import MyLovelyPoint from "./routes/MyLovelyPoint";
+import MyLoyaltyPoint from "./routes/MyLoyaltyPoint";
 import Layout from "./navigation/Layout";
 import ContributePoints from "./routes/ContributePoints";
 import TradePoints from "./routes/TradePoints";
@@ -38,7 +38,7 @@ function App() {
         </header>
       <Routes>
           <Route path="/" element={<Layout />}>
-              <Route index path="/MyLovelyPoint" element={<MyLovelyPoint userId={userId}/>}/>
+              <Route index path="/MyLoyaltyPoint" element={<MyLoyaltyPoint userId={userId}/>}/>
               <Route path="/ContributePoints" element={<ContributePoints userId={userId} updateTotalPoints={updateTotalPoints}/>}/>
               <Route path="/TradePoints" element={<TradePoints userId={userId} updateTotalPoints={updateTotalPoints}/>}/>
               <Route path="/TransactionHistory" element={<TransactionHistory />}/>
