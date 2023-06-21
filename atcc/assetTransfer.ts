@@ -134,7 +134,7 @@ export class AssetTransferContract extends Contract {
             throw new Error(`The asset ${data.customerId} and ${data.companyName} does not exist`);
         }
         const userPoint = JSON.parse(utf8Decoder.decode(result));
-        userPoint.point += data.point;
+        userPoint.point += Number(data.point);
         return ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(userPoint))));
     }
 
@@ -153,13 +153,13 @@ export class AssetTransferContract extends Contract {
         if (userPoint.point < data.contribution) {
             throw new Error('You can not contribute more than the point you hold.');
         }
-        userPoint.point -= data.contribution;
-        userPoint.contribution += data.contribution;
+        userPoint.point -= Number(data.contribution);
+        userPoint.contribution += Number(data.contribution);
         await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(userPoint))));
 
         const pool = await ctx.stub.getState(this.POOL_KEY);
         const liquidityPool = JSON.parse(utf8Decoder.decode(pool));
-        liquidityPool.total += data.contribution;
+        liquidityPool.total += Number(data.contribution);
         await ctx.stub.putState(this.POOL_KEY, Buffer.from(stringify(sortKeysRecursive(liquidityPool))));
     }
 
@@ -178,13 +178,13 @@ export class AssetTransferContract extends Contract {
         if (userPoint.contribution < data.point) {
             throw new Error('You can not burrow point more than your contribution.');
         }
-        userPoint.contribution -= data.point;
-        userPoint.point += data.point;
+        userPoint.contribution -= Number(data.point);
+        userPoint.point += Number(data.point);
         await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(userPoint))));
 
         const pool = await ctx.stub.getState(this.POOL_KEY);
         const liquidityPool = JSON.parse(utf8Decoder.decode(pool));
-        liquidityPool.total -= data.point;
+        liquidityPool.total -= Number(data.point);
         await ctx.stub.putState(this.POOL_KEY, Buffer.from(stringify(sortKeysRecursive(liquidityPool))));
     }
 }

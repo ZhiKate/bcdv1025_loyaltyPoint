@@ -3,6 +3,7 @@ import {AssetRouter} from "./routes/assets";
 import * as dotenv from 'dotenv';
 import {Connection} from "./fabric/connection";
 import swaggerUi from 'swagger-ui-express';
+import cors from 'cors';
 import {swaggerSpec} from "./swagger";
 
 class App {
@@ -10,8 +11,14 @@ class App {
     public assetRouter: AssetRouter = new AssetRouter();
 
     constructor() {
+        const allowedOrigins = ['http://localhost:3000'];
+        const options: cors.CorsOptions = {
+            origin: allowedOrigins
+        };
+
         new Connection().init();
         this.app = express();
+        this.app.use(cors(options));
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: false }));
         this.app.use(

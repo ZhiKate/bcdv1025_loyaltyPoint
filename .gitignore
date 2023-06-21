@@ -6,6 +6,8 @@ mychaincode.tar.gz
 
 /backend/node_modules
 /backend/dist
+/frontend/build
+/frontend/node_modules
 
 /bin/*
 /builders/*

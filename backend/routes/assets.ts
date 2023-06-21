@@ -97,9 +97,13 @@ export class AssetRouter {
                         return;
                     }
                     const asset = JSON.stringify(instanceToPlain(assetInstance));
-
                     await Connection.contract.submitTransaction('LiquidUserPoint', asset);
-                    response = ({"message": "Liquidity success" })
+
+                    const resultBytes = Connection.contract.evaluateTransaction('GetAllContribution');
+                    const resultJson = utf8Decoder.decode(await resultBytes);
+                    const result = JSON.parse(resultJson);
+
+                    response = ({"message": "Liquidity success", "total": result.total})
                 } catch (error) {
                     status = 400;
                     response = this.errorHandler(error);
@@ -153,7 +157,11 @@ export class AssetRouter {
                     const asset = JSON.stringify(instanceToPlain(assetInstance));
 
                     await Connection.contract.submitTransaction('BorrowUserPoint', asset);
-                    response = ({"message": "Borrow success" })
+
+                    const resultBytes = Connection.contract.evaluateTransaction('GetAllContribution');
+                    const resultJson = utf8Decoder.decode(await resultBytes);
+                    const result = JSON.parse(resultJson);
+                    response = ({"message": "Borrow success", "total": result.total })
                 } catch (error) {
                     status = 400;
                     response = this.errorHandler(error);
