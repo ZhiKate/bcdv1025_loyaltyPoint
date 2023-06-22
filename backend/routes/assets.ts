@@ -2,7 +2,7 @@ import {Express, Request, Response} from "express";
 import {Connection} from "../fabric/connection";
 import {EndorseError, GatewayError} from "@hyperledger/fabric-gateway";
 import {instanceToPlain, plainToInstance} from "class-transformer";
-import {ContributePointSchema, CreatePointSchema, UpdatePointSchema} from "../schema/asset.schema";
+import {ContributePointSchema, CreatePointSchema, TradePointSchema, UpdatePointSchema} from "../schema/asset.schema";
 import {validate, ValidationError} from "class-validator";
 
 const utf8Decoder = new TextDecoder();
@@ -33,7 +33,7 @@ export class AssetRouter {
         /**
          * @swagger
          *
-         * /contribution:
+         * /timhorton/contribution:
          *   get:
          *     tags:
          *       - "Contribution"
@@ -45,13 +45,59 @@ export class AssetRouter {
          *       200:
          *         description: Successful retrieval
          */
-        app.route('/contribution')
+        app.route('/timhorton/contribution')
             .get(async (req: Request, res: Response) => {
-                const resultBytes = Connection.contract.evaluateTransaction('GetAllContribution');
+                const resultBytes = Connection.contract.evaluateTransaction('GetAllTimhortonContribution');
                 const resultJson = utf8Decoder.decode(await resultBytes);
                 const result = JSON.parse(resultJson);
                 res.send(result);
         })
+
+        /**
+         * @swagger
+         *
+         * /starbucks/contribution:
+         *   get:
+         *     tags:
+         *       - "Contribution"
+         *     summary: "Get total contribution"
+         *     description: Get total contribution
+         *     produces:
+         *       - application/json
+         *     responses:
+         *       200:
+         *         description: Successful retrieval
+         */
+        app.route('/starbucks/contribution')
+            .get(async (req: Request, res: Response) => {
+                const resultBytes = Connection.contract.evaluateTransaction('GetAllStarbucksContribution');
+                const resultJson = utf8Decoder.decode(await resultBytes);
+                const result = JSON.parse(resultJson);
+                res.send(result);
+            })
+
+        /**
+         * @swagger
+         *
+         * /pcoptimum/contribution:
+         *   get:
+         *     tags:
+         *       - "Contribution"
+         *     summary: "Get total contribution"
+         *     description: Get total contribution
+         *     produces:
+         *       - application/json
+         *     responses:
+         *       200:
+         *         description: Successful retrieval
+         */
+        app.route('/pcoptimum/contribution')
+            .get(async (req: Request, res: Response) => {
+                const resultBytes = Connection.contract.evaluateTransaction('GetAllPcoptimumContribution');
+                const resultJson = utf8Decoder.decode(await resultBytes);
+                const result = JSON.parse(resultJson);
+                res.send(result);
+            })
 
         /**
          * @swagger
@@ -91,6 +137,7 @@ export class AssetRouter {
                 let status = 200;
                 try {
                     let assetInstance = plainToInstance(ContributePointSchema, req.body);
+                    assetInstance.createdDate = Date.now();
                     const validateError: ValidationError[] = await validate(assetInstance);
                     if (validateError.length > 0) {
                         res.status(400).send(validateError[0].constraints);
@@ -99,7 +146,14 @@ export class AssetRouter {
                     const asset = JSON.stringify(instanceToPlain(assetInstance));
                     await Connection.contract.submitTransaction('LiquidUserPoint', asset);
 
-                    const resultBytes = Connection.contract.evaluateTransaction('GetAllContribution');
+                    let resultBytes;
+                    if (assetInstance.companyName == "timhorton") {
+                        resultBytes = Connection.contract.evaluateTransaction('GetAllTimhortonContribution');
+                    } else if (assetInstance.companyName == "starbucks") {
+                        resultBytes = Connection.contract.evaluateTransaction('GetAllStarbucksContribution');
+                    } else if (assetInstance.companyName == "loblaws" || assetInstance.companyName == "shoppers") {
+                        resultBytes = Connection.contract.evaluateTransaction('GetAllPcoptimumContribution');
+                    }
                     const resultJson = utf8Decoder.decode(await resultBytes);
                     const result = JSON.parse(resultJson);
 
@@ -114,7 +168,7 @@ export class AssetRouter {
         /**
          * @swagger
          *
-         * /user/borrow:
+         * /user/trade:
          *   post:
          *     tags:
          *       - "Contribution"
@@ -128,14 +182,20 @@ export class AssetRouter {
          *           type: object
          *           required:
          *             - customerId
-         *             - companyName
-         *             - point
+         *             - companyNameFrom
+         *             - pointFrom
+         *             - companyNameTo
+         *             - pointTo
          *           properties:
          *             customerId:
          *               type: string
-         *             companyName:
+         *             companyNameFrom:
          *               type: string
-         *             point:
+         *             pointFrom:
+         *               type: integer
+         *             companyNameTo:
+         *               type: string
+         *             pointTo:
          *               type: integer
          *     produces:
          *       - application/json
@@ -143,12 +203,13 @@ export class AssetRouter {
          *       200:
          *         description: Success
          */
-        app.route('/user/borrow')
+        app.route('/user/trade')
             .post(async (req: Request, res: Response) => {
                 let response;
                 let status = 200;
                 try {
-                    let assetInstance = plainToInstance(UpdatePointSchema, req.body);
+                    let assetInstance = plainToInstance(TradePointSchema, req.body);
+                    assetInstance.createdDate = Date.now();;
                     const validateError: ValidationError[] = await validate(assetInstance);
                     if (validateError.length > 0) {
                         res.status(400).send(validateError[0].constraints);
@@ -156,12 +217,34 @@ export class AssetRouter {
                     }
                     const asset = JSON.stringify(instanceToPlain(assetInstance));
 
-                    await Connection.contract.submitTransaction('BorrowUserPoint', asset);
+                    await Connection.contract.submitTransaction('TradeUserPoint', asset);
 
-                    const resultBytes = Connection.contract.evaluateTransaction('GetAllContribution');
-                    const resultJson = utf8Decoder.decode(await resultBytes);
-                    const result = JSON.parse(resultJson);
-                    response = ({"message": "Borrow success", "total": result.total })
+                    let resultBytes;
+                    let responseData: Record<string, any> = {"message": "Borrow success"}
+                    if (assetInstance.companyNameFrom == "timhorton") {
+                        resultBytes = Connection.contract.evaluateTransaction('GetAllTimhortonContribution');
+                    } else if (assetInstance.companyNameFrom == "starbucks") {
+                        resultBytes = Connection.contract.evaluateTransaction('GetAllStarbucksContribution');
+                    } else if (assetInstance.companyNameFrom == "loblaws" || assetInstance.companyNameFrom == "shoppers") {
+                        resultBytes = Connection.contract.evaluateTransaction('GetAllPcoptimumContribution');
+                    }
+                    let resultJson = utf8Decoder.decode(await resultBytes);
+                    let result = JSON.parse(resultJson);
+                    let totalKey = assetInstance.companyNameFrom + "total";
+                    responseData[totalKey] = result.total;
+
+                    if (assetInstance.companyNameTo == "timhorton") {
+                        resultBytes = Connection.contract.evaluateTransaction('GetAllTimhortonContribution');
+                    } else if (assetInstance.companyNameTo == "starbucks") {
+                        resultBytes = Connection.contract.evaluateTransaction('GetAllStarbucksContribution');
+                    } else if (assetInstance.companyNameTo == "loblaws" || assetInstance.companyNameTo == "shoppers") {
+                        resultBytes = Connection.contract.evaluateTransaction('GetAllPcoptimumContribution');
+                    }
+                    resultJson = utf8Decoder.decode(await resultBytes);
+                    result = JSON.parse(resultJson);
+                    totalKey = assetInstance.companyNameTo + "total";
+                    responseData[totalKey] = result.total;
+                    response = (responseData)
                 } catch (error) {
                     status = 400;
                     response = this.errorHandler(error);
@@ -259,6 +342,7 @@ export class AssetRouter {
                 let status = 200;
                 try {
                     let assetInstance = plainToInstance(UpdatePointSchema, req.body);
+                    assetInstance.createdDate = Date.now()
                     const validateError: ValidationError[] = await validate(assetInstance);
                     if (validateError.length > 0) {
                         res.status(400).send(validateError[0].constraints);
@@ -317,6 +401,7 @@ export class AssetRouter {
                 try {
                     let assetInstance = plainToInstance(CreatePointSchema, req.body);
                     assetInstance.contribution = 0;
+                    assetInstance.createdDate = Date.now();
                     const validateError: ValidationError[] = await validate(assetInstance);
                     if (validateError.length > 0) {
                         res.status(400).send(validateError[0].constraints);
@@ -331,6 +416,35 @@ export class AssetRouter {
                     response = this.errorHandler(error);
                 }
                 res.status(status).send(response);
+            })
+
+        /**
+         * @swagger
+         *
+         * /users/{id}/history:
+         *   get:
+         *     tags:
+         *       - "Point"
+         *     summary: "Get user's point history"
+         *     description: Get user point history
+         *     parameters:
+         *       - in: path
+         *         name: id
+         *         schema:
+         *           type: string
+         *         required: true
+         *     produces:
+         *       - application/json
+         *     responses:
+         *       200:
+         *         description: Successful retrieval
+         */
+        app.route('/users/:id/history')
+            .get(async (req: Request, res: Response) => {
+                const resultBytes = Connection.contract.evaluateTransaction('GetUserTxHistory', req.params.id);
+                const resultJson = utf8Decoder.decode(await resultBytes);
+                const result = JSON.parse(resultJson);
+                res.send(result);
             })
     }
 }

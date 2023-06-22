@@ -20,6 +20,9 @@ export class UserPoint {
 
     @Property()
     public point: number;
+
+    @Property()
+    public createdDate: number;
 }
 
 @Object()

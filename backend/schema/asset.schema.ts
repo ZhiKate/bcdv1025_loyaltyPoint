@@ -11,6 +11,30 @@ export class UpdatePointSchema {
 
     @IsNumber()
     public point?: number;
+
+    @IsNumber()
+    public createdDate?: number;
+}
+
+export class TradePointSchema {
+    @IsString({message: "ID should be string type."})
+    @Trim()
+    public customerId?: string;
+
+    @Trim()
+    public companyNameFrom?: string;
+
+    @IsNumber()
+    public pointFrom?: number;
+
+    @Trim()
+    public companyNameTo?: string;
+
+    @IsNumber()
+    public pointTo?: number;
+
+    @IsNumber()
+    public createdDate?: number;
 }
 
 export class CreatePointSchema {
@@ -29,6 +53,9 @@ export class CreatePointSchema {
 
     @IsNumber()
     public point?: number;
+
+    @IsNumber()
+    public createdDate?: number;
 }
 
 export class ContributePointSchema {
@@ -41,4 +68,7 @@ export class ContributePointSchema {
 
     @Trim()
     public contribution?: number;
+
+    @IsNumber()
+    public createdDate?: number;
 }

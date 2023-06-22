@@ -8,19 +8,49 @@ import TradePoints from "./routes/TradePoints";
 import TransactionHistory from "./routes/TransactionHistory";
 
 function App() {
-    const [totalPoolPoints, setTotalPoolPoints] = useState<number>(0);
+    const [totalTimhortonPoolPoints, setTotalTimhortonPoolPoints] = useState<number>(0);
+    const [totalStarbucksPoolPoints, setTotalStarbucksPoolPoints] = useState<number>(0);
+    const [totalPcoptimumPoolPoints, setTotalPcoptimumPoolPoints] = useState<number>(0);
+
     const userId: number = 2;
     useEffect(() => {
         const getTotalPoolPoints = async () => {
-            const response = await fetch('http://127.0.0.1:8000/contribution');
-            const data = await response.json();
-            setTotalPoolPoints(data.total);
+            let response = await fetch('http://127.0.0.1:8000/timhorton/contribution');
+            let data = await response.json();
+            setTotalTimhortonPoolPoints(data.total);
         }
         getTotalPoolPoints();
-    }, [totalPoolPoints])
 
-    const updateTotalPoints = async (value: number) => {
-        setTotalPoolPoints(value);
+    }, [totalTimhortonPoolPoints])
+
+    useEffect(() => {
+        const getTotalPoolPoints = async () => {
+            const response = await fetch('http://127.0.0.1:8000/starbucks/contribution');
+            const data = await response.json();
+            setTotalStarbucksPoolPoints(data.total);
+        }
+        getTotalPoolPoints();
+    }, [totalStarbucksPoolPoints])
+
+    useEffect(() => {
+        const getTotalPoolPoints = async () => {
+            const response = await fetch('http://127.0.0.1:8000/pcoptimum/contribution');
+            const data = await response.json();
+            setTotalPcoptimumPoolPoints(data.total);
+        }
+        getTotalPoolPoints();
+    }, [totalPcoptimumPoolPoints])
+
+    const updateTotalTimhortonPoints = async (value: number) => {
+        setTotalTimhortonPoolPoints(value);
+    }
+
+    const updateTotalStarbucksPoints = async (value: number) => {
+        setTotalStarbucksPoolPoints(value);
+    }
+
+    const updateTotalPcoptimumPoints = async (value: number) => {
+        setTotalPcoptimumPoolPoints(value);
     }
   return (
       <>
@@ -31,7 +61,9 @@ function App() {
                 <h1>Loyalty Points Pooling</h1>
               </div>
               <div className="col-md-6 text-md-right wallet">
-                Total Pool Points: <span id="demo">{totalPoolPoints}</span>
+                  <p>Total Timhorton Pool Points: <span id="demo">{totalTimhortonPoolPoints}</span></p>
+                  <p>Total Starbucks Pool Points: <span id="demo">{totalStarbucksPoolPoints}</span></p>
+                  <p>Total Pcoptimum Pool Points: <span id="demo">{totalPcoptimumPoolPoints}</span></p>
               </div>
             </div>
           </div>
@@ -39,9 +71,20 @@ function App() {
       <Routes>
           <Route path="/" element={<Layout />}>
               <Route index path="/MyLoyaltyPoint" element={<MyLoyaltyPoint userId={userId}/>}/>
-              <Route path="/ContributePoints" element={<ContributePoints userId={userId} updateTotalPoints={updateTotalPoints}/>}/>
-              <Route path="/TradePoints" element={<TradePoints userId={userId} updateTotalPoints={updateTotalPoints}/>}/>
-              <Route path="/TransactionHistory" element={<TransactionHistory />}/>
+              <Route path="/ContributePoints"
+                     element={<ContributePoints userId={userId}
+                                                updateTotalTimhortonPoints={updateTotalTimhortonPoints}
+                                                updateTotalStarbucksPoints={updateTotalStarbucksPoints}
+                                                updateTotalPcoptimumPoints={updateTotalPcoptimumPoints}
+                     />}
+              />
+              <Route path="/TradePoints"
+                     element={<TradePoints userId={userId}
+                                           updateTotalTimhortonPoints={updateTotalTimhortonPoints}
+                                           updateTotalStarbucksPoints={updateTotalStarbucksPoints}
+                                           updateTotalPcoptimumPoints={updateTotalPcoptimumPoints}
+                     />}/>
+              <Route path="/TransactionHistory" element={<TransactionHistory userId={userId}/>}/>
           </Route>
       </Routes>
     </>
