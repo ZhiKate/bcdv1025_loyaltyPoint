@@ -16,10 +16,10 @@ npm run dev
 swagger: http://localhost:8000/api-docs
 
 # Frontend
-cd frontend
-npm install
-npm run build
-npm run start
+cd frontend  
+npm install  
+npm run build  
+npm run start  
 
 ### Access CouchDB GUI
 GUI url: http://127.0.0.1:5984/_utils (check peer's port in docker compose file)
