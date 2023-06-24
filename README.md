@@ -12,7 +12,7 @@ To solve fix dilemma of Current Loyalty Points System (low liquidity).
 4. Heegyoung Choi
 5. Cuimei Zhi
 
-################################## REQUIRMENT TO RUN PROGRAM ##################################################################
+################################## REQUIRMENT TO RUN PROGRAM #######################################################
 ### Required installation.
 1. curl -sSLO https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh && chmod +x install-fabric.sh
 2. ./install-fabric.sh binary | ./install-fabric.sh --fabric-version 2.5.0 docker
@@ -42,5 +42,6 @@ GUI url: http://127.0.0.1:5984/_utils (check peer's port in docker compose file)
 
 
 #############################################  STATE DIAGRAM  ############################################################
+state_diagram.jpg in the same path of this README.md.
 
 
