@@ -42,6 +42,8 @@ GUI url: http://127.0.0.1:5984/_utils (check peer's port in docker compose file)
 
 
 #############################################  STATE DIAGRAM  ############################################################
-state_diagram.jpg in the same path of this README.md.
+diagram.jpg in the same path of this README.md.
+
+#############################################  Sequence Diagram  #########################################################
 
 
