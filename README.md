@@ -47,3 +47,15 @@ diagram.jpg in the same path of this README.md.
 #############################################  Sequence Diagram  #########################################################
 all Sequence Diagrams are in the folder 'SequenceDiagram'
 
+#############################################   Roles #######################################################
+In the channel:
+Organizations: We need 3 organizations for each of the 3 different types of loyalty points.
+        -- Org1: 2 peers
+        -- Org2: 1 peer
+        -- Org3: 2 peers
+
+Order: 1 order
+
+Database: CouchDB 
+         -- because we can use compound key to get the arrange of "point cards". One user can apply multipul "point cards"
+
